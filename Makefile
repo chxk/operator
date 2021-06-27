@@ -36,7 +36,7 @@ IMAGE_TAG_BASE ?= kuaishou.com/operator
 BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:v$(VERSION)
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= registry.corp.kuaishou.com/kml-private/bagua-operator:$(shell git rev-parse HEAD | cut -c 1-8)
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true,crdVersions=v1beta1,preserveUnknownFields=true"
 
@@ -94,6 +94,9 @@ run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
 docker-build: test ## Build docker image with the manager.
+	docker build -t ${IMG} .
+
+docker-image: generate fmt vet
 	docker build -t ${IMG} .
 
 docker-push: ## Push docker image with the manager.
